@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net462;netstandard2.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
     <SignAssembly>true</SignAssembly>
@@ -12,23 +12,15 @@
     <Description>Fast dynamic wrapper for accessing hidden methods and fields of .Net objects.</Description>
     <Version>2.1.0</Version>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' != 'net462' ">
+  <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
+  <PropertyGroup>
     <Nullable>enable</Nullable>
-    <DefineConstants>$(DefineConstants);EXPOSED_NULLABLE</DefineConstants>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
+  <ItemGroup>
     <AdditionalFiles Include="PublicAPI.Shipped.Nullable.txt" />
     <AdditionalFiles Include="PublicAPI.Unshipped.Nullable.txt" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' != 'netcoreapp3.1' ">
-    <AdditionalFiles Include="PublicAPI.Shipped.txt" />
-    <AdditionalFiles Include="PublicAPI.Unshipped.txt" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.0.0" PrivateAssets="All" />

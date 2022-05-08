@@ -78,7 +78,7 @@ namespace ExposedObject
         public override DynamicMetaObject BindInvokeMember(InvokeMemberBinder binder, DynamicMetaObject[] args)
         {
             var self = Expression;
-            var exposed = (Exposed)Value;
+            var exposed = (Exposed)Value!;
 
             var argTypes = new Type[args.Length];
             var argExps = new Expression[args.Length];
@@ -94,11 +94,7 @@ namespace ExposedObject
 
             var type = exposed.SubjectType;
             var declaringType = type;
-#if EXPOSED_NULLABLE
             MethodInfo? method;
-#else
-            MethodInfo method;
-#endif
             do
             {
                 method = declaringType.GetMethod(binder.Name, GetBindingFlags(), null, argTypes, null);
@@ -184,12 +180,8 @@ namespace ExposedObject
         /// </exception>
         private MemberExpression GetMemberExpression(Expression self, string memberName)
         {
-#if EXPOSED_NULLABLE
             MemberExpression? memberExpression = null;
-#else
-            MemberExpression memberExpression = null;
-#endif
-            var type = ((Exposed)Value).SubjectType;
+            var type = ((Exposed)Value!).SubjectType;
             var @this = isStatic
                             ? null
                             : Expression.Convert(Expression.Field(Expression.Convert(self, typeof(Exposed)), "value"), type);
