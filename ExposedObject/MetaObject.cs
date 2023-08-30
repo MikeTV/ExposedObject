@@ -108,7 +108,7 @@ namespace ExposedObject
 
             var @this = isStatic
                             ? null
-                            : Expression.Convert(Expression.Field(Expression.Convert(self, typeof(Exposed)), "value"), type);
+                            : Expression.Convert(Expression.Field(Expression.Convert(self, typeof(Exposed)), "value"), method.ReflectedType ?? type);
 
             var target = Expression.Call(@this, method, argExps);
             var restrictions = BindingRestrictions.GetTypeRestriction(self, typeof(Exposed));
@@ -182,9 +182,6 @@ namespace ExposedObject
         {
             MemberExpression? memberExpression = null;
             var type = ((Exposed)Value!).SubjectType;
-            var @this = isStatic
-                            ? null
-                            : Expression.Convert(Expression.Field(Expression.Convert(self, typeof(Exposed)), "value"), type);
             var declaringType = type;
 
             do
@@ -192,14 +189,14 @@ namespace ExposedObject
                 var property = declaringType.GetProperty(memberName, GetBindingFlags());
                 if (property != null)
                 {
-                    memberExpression = Expression.Property(@this, property);
+                    memberExpression = Expression.Property(ConvertedExpression(property.ReflectedType ?? type), property);
                 }
                 else
                 {
                     var field = declaringType.GetField(memberName, GetBindingFlags());
                     if (field != null)
                     {
-                        memberExpression = Expression.Field(@this, field);
+                        memberExpression = Expression.Field(ConvertedExpression(field.ReflectedType ?? type), field);
                     }
                 }
             }
@@ -211,6 +208,10 @@ namespace ExposedObject
             }
 
             return memberExpression;
+
+            Expression? ConvertedExpression(Type memberType) => isStatic
+                                                    ? null
+                                                    : Expression.Convert(Expression.Field(Expression.Convert(self, typeof(Exposed)), "value"), memberType);
         }
 
         /// <summary>
@@ -247,7 +248,7 @@ namespace ExposedObject
         {
             return isStatic
                        ? BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic
-                       : BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+                       : BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
         }
     }
 }
